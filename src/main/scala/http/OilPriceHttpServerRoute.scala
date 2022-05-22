@@ -21,11 +21,7 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
   }
 
   def routes: Route = {
-    path("health") {
-      get {
-        complete(Marshal(DateOilPrice(100, 12, 2)).to[RequestEntity])
-      }
-    } ~
+
       path("getFromDate") {
         get {
           extractRequest { request =>
@@ -33,7 +29,7 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
               .map(date => Marshal.apply(getPriseFromDate(date)).to[RequestEntity])
               .recoverWith { case e: Throwable =>
                 Future.successful {
-                  Marshal.apply(Error(0, "Неизвестная ошибка" + e.getMessage)).to[RequestEntity]
+                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
                 }
               }
 
@@ -49,7 +45,7 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
               .map(period => Marshal.apply(getAveragePriceFromPeriod(period)).to[RequestEntity])
               .recoverWith { case e: Throwable =>
                 Future.successful {
-                  Marshal.apply(Error(0, "Неизвестная ошибка" + e.getMessage)).to[RequestEntity]
+                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
                 }
               }
 
@@ -65,7 +61,7 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
               .map(period => Marshal.apply(getMaxMin(period)).to[RequestEntity])
               .recoverWith { case e: Throwable =>
                 Future.successful {
-                  Marshal.apply(Error(0, "Неизвестная ошибка" + e.getMessage)).to[RequestEntity]
+                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
                 }
               }
             onComplete(processingResult)
@@ -76,9 +72,13 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
       path("getAll") {
         get {
             complete(
-              Marshal.apply(getAll).to[RequestEntity]
+              Marshal.apply(getAll()).to[RequestEntity]
             )
         }
       }
+  }
+
+  private def getErrorFromThrowable(e: Throwable) = {
+    Error(0, "Неизвестная ошибка" + e.getMessage)
   }
 }

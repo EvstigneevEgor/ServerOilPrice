@@ -1,13 +1,12 @@
 package Logic
 
-import http.MessagesApi.{AnswerAllRaw, AnswerMinMax, AnswerPrice, DateOilPrice, ERROR_NOT_ENTER_DATE, ERROR_NOT_FOUND_FROM_DATE, Error, MinMax, OilPrice, PeriodOilPrice}
+import http.MessagesApi._
 import utils.dateUtils.{getDateOilPriceFromStr, getDaysBetweenDate, isDateIncludeInPeriod}
 
-import java.time.LocalDate
 import scala.io.Source
 
-object OilLogic extends App {
-  val dataSource = "src/main/resourse/data.csv"
+object OilLogic {
+  val dataSource = "src/main/resource/data.csv"
 
   getAveragePriceFromPeriod(PeriodOilPrice(Some(DateOilPrice(2019, 7, 14)), Some(DateOilPrice(2018, 8, 14))))
 
@@ -26,6 +25,7 @@ object OilLogic extends App {
     val data = getOilPriceFromFile
     data
   }
+
   def getMaxMin(periodOilPrice: PeriodOilPrice): AnswerMinMax = {
     val data = getOilPriceFromFile
 

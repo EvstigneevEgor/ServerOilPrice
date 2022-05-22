@@ -1,17 +1,14 @@
 package http
+
 import akka.actor._
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl._
-import akka.util.Timeout
-import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.Route._
 import akka.http.scaladsl.server.RouteResult._
-import akka.stream.ActorMaterializer
-import com.sun.org.slf4j.internal.LoggerFactory
+import akka.util.Timeout
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 class OilPriceHttpServer {
   val splitter = "\n------------------------------------------------\n"
@@ -21,7 +18,7 @@ class OilPriceHttpServer {
   implicit val log: LoggingAdapter = Logging(actorSystem, "main")
 
   def startHttp(address: String, port: Int): Future[ServerBinding] = {
-     Http().newServerAt(address, port).bindFlow(new OilPriceHttpServerRoute().route)
+    Http().newServerAt(address, port).bindFlow(new OilPriceHttpServerRoute().route)
   }
 
   def stop(http: Future[Http.ServerBinding]): Unit = {

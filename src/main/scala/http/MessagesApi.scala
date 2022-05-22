@@ -37,4 +37,5 @@ object MessagesApi {
   ///
   val ERROR_NOT_FOUND_FROM_DATE: Error = Error(1, "Цена за выбранную дату не найдена")
   val ERROR_NOT_ENTER_DATE: Error = Error(2, "не указана(-ы) дата(-ы)")
+  val ERROR_UNKNOWN: Error = Error(0, "не известная ошибка")
 }
