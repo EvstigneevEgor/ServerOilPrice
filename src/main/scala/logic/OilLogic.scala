@@ -1,4 +1,4 @@
-package Logic
+package logic
 
 import http.MessagesApi._
 import utils.dateUtils.{getDateOilPriceFromStr, getDaysBetweenDate, isDateIncludeInPeriod}
@@ -21,7 +21,7 @@ object OilLogic {
     AnswerPrice(answer)
   }
 
-  def getAll(): Seq[OilPrice] = {
+  def getAll: Seq[OilPrice] = {
     val data = getOilPriceFromFile
     data
   }

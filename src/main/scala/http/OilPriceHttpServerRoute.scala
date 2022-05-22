@@ -1,6 +1,6 @@
 package http
 
-import Logic.OilLogic.{getAll, getAveragePriceFromPeriod, getMaxMin, getPriseFromDate}
+import logic.OilLogic.{getAll, getAveragePriceFromPeriod, getMaxMin, getPriseFromDate}
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.marshalling.Marshal
@@ -72,7 +72,7 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
       path("getAll") {
         get {
             complete(
-              Marshal.apply(getAll()).to[RequestEntity]
+              Marshal.apply(getAll).to[RequestEntity]
             )
         }
       }
