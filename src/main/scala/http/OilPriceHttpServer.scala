@@ -11,7 +11,6 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 class OilPriceHttpServer {
-  val splitter = "\n------------------------------------------------\n"
   implicit val actorSystem: ActorSystem = ActorSystem.apply("MyHttpServer")
   implicit val executionContext: ExecutionContext = actorSystem.dispatcher
   implicit val timeout: Timeout = Timeout(15.seconds)
