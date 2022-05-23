@@ -1,18 +1,16 @@
 package http
 
-import logic.OilLogic.{getAll, getAveragePriceFromPeriod, getMaxMin, getPriseFromDate}
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.{RequestEntity, ResponseEntity, StatusCodes}
+import akka.http.scaladsl.model.RequestEntity
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.util.ByteString
 import http.MessagesApi.{DateOilPrice, Error, PeriodOilPrice}
+import logic.OilLogic.{getAveragePriceFromPeriod, getMaxMin, getOilPriceFromFile, getPriseFromDate}
 
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit val execCtx: ExecutionContext, implicit val log: LoggingAdapter) extends MessagesApi {
 
@@ -22,35 +20,33 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
 
   def routes: Route = {
 
-      path("getFromDate") {
-        get {
-          extractRequest { request =>
-            val processingResult = Unmarshal(request).to[DateOilPrice]
-              .map(date => Marshal.apply(getPriseFromDate(date)).to[RequestEntity])
-              .recoverWith { case e: Throwable =>
-                Future.successful {
-                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
-                }
+    path("getFromDate") {
+      get {
+        extractRequest { request =>
+          val processingResult = Unmarshal(request).to[DateOilPrice]
+            .map(date => Marshal(getPriseFromDate(date)).to[RequestEntity])
+            .recoverWith { case e: Throwable =>
+              Future.successful {
+                Marshal(getErrorFromThrowable(e)).to[RequestEntity]
               }
+            }
 
-            onComplete(processingResult)
-              .apply(complete(_))
-          }
+          onComplete(processingResult)(complete(_))
         }
-      } ~
+      }
+    } ~
       path("getAverageFromPeriod") {
         get {
           extractRequest { request =>
             val processingResult = Unmarshal(request).to[PeriodOilPrice]
-              .map(period => Marshal.apply(getAveragePriceFromPeriod(period)).to[RequestEntity])
+              .map(period => Marshal(getAveragePriceFromPeriod(period)).to[RequestEntity])
               .recoverWith { case e: Throwable =>
                 Future.successful {
-                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
+                  Marshal(getErrorFromThrowable(e)).to[RequestEntity]
                 }
               }
 
-            onComplete(processingResult)
-              .apply(complete(_))
+            onComplete(processingResult)(complete(_))
           }
         }
       } ~
@@ -58,22 +54,21 @@ class OilPriceHttpServerRoute(implicit val actorSystem: ActorSystem, implicit va
         get {
           extractRequest { request =>
             val processingResult = Unmarshal(request).to[PeriodOilPrice]
-              .map(period => Marshal.apply(getMaxMin(period)).to[RequestEntity])
+              .map(period => Marshal(getMaxMin(period)).to[RequestEntity])
               .recoverWith { case e: Throwable =>
                 Future.successful {
-                  Marshal.apply(getErrorFromThrowable(e)).to[RequestEntity]
+                  Marshal(getErrorFromThrowable(e)).to[RequestEntity]
                 }
               }
-            onComplete(processingResult)
-              .apply(complete(_))
+            onComplete(processingResult)(complete(_))
           }
         }
       } ~
       path("getAll") {
         get {
-            complete(
-              Marshal.apply(getAll).to[RequestEntity]
-            )
+          complete(
+            Marshal(getOilPriceFromFile).to[RequestEntity]
+          )
         }
       }
   }

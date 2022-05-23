@@ -1,13 +1,13 @@
 package logic
 
 import http.MessagesApi._
-import utils.dateUtils.{getDateOilPriceFromStr, getDaysBetweenDate, isDateIncludeInPeriod}
+import utils.DateUtils.{getDateOilPriceFromStr, getDaysBetweenDate, isDateIncludeInPeriod}
 
 import scala.io.Source
 
 object OilLogic {
   val dataSource = "src/main/resource/data.csv"
-  
+
   def getPriseFromDate(dateOilPrice: DateOilPrice): AnswerPrice = {
     val answer =
       getOilPriceFromFile.find { oilPrice =>
@@ -17,11 +17,6 @@ object OilLogic {
         case None => Left(ERROR_NOT_FOUND_FROM_DATE)
       }
     AnswerPrice(answer)
-  }
-
-  def getAll: Seq[OilPrice] = {
-    val data = getOilPriceFromFile
-    data
   }
 
   def getMaxMin(periodOilPrice: PeriodOilPrice): AnswerMinMax = {
@@ -48,7 +43,7 @@ object OilLogic {
     val averageDateOrError =
       periodOilPrice match {
         case PeriodOilPrice(Some(dateFrom), Some(dateTo)) =>
-          // из всех месяцев остовляем только те которые пересекают период
+          // из всех месяцев оставляем только те которые пересекают период
           val sliceRaw = getRawFromPeriod(data, dateFrom, dateTo)
           if (sliceRaw.isEmpty) {
             Left(ERROR_NOT_FOUND_FROM_DATE)
@@ -62,8 +57,9 @@ object OilLogic {
             // всего дней за весь период
             val countDays = priceWithDayCount.map { case (_, daysCount) => daysCount }.sum
 
-            val averagePrice = priceWithDayCount.map { case (priceToDate, daysCount) => println(priceToDate, daysCount, countDays)
-              priceToDate * daysCount / countDays
+            val averagePrice = priceWithDayCount.map {
+              case (priceToDate, daysCount) =>
+                priceToDate * daysCount / countDays
             }.sum
 
 
@@ -75,16 +71,13 @@ object OilLogic {
     AnswerPrice(averageDateOrError)
   }
 
-  private def getOilPriceFromFile: Seq[OilPrice] = {
+  def getOilPriceFromFile: Seq[OilPrice] = {
     val file = Source.fromFile(dataSource, "UTF-8")
-    val data =
-      file.getLines()
-        .drop(1)
-        .toSeq
-        .map(getOilPriceFromRaw)
+    file.getLines()
+      .drop(1)
+      .toSeq
+      .map(getOilPriceFromRaw)
 
-    data
-    data
   }
 
   private def getRawFromPeriod(data: Seq[OilPrice], dateFrom: DateOilPrice, dateTo: DateOilPrice): Seq[OilPrice] = {
@@ -96,7 +89,7 @@ object OilLogic {
   }
 
   /**
-   * Заменяем в перво элементе выборки дату начала, А в последнем дату конца. для измерения средней стоиости
+   * Заменяем в перво элементе выборки дату начала, А в последнем дату конца. для измерения средней стоимости
    */
   private def replaceHeadAndLastDate(dateFrom: DateOilPrice, dateTo: DateOilPrice, sliceData: Seq[OilPrice]): Seq[OilPrice] = {
     val newData =
@@ -123,7 +116,7 @@ object OilLogic {
   }
 
   /**
-   * Ищет индекс период элемента которого пересикает дату
+   * Ищет индекс период элемента которого пересекает дату
    */
   private def getIntersectionIndex(data: Seq[OilPrice], findDate: DateOilPrice): Option[Int] = {
     data.indexWhere(row => isDateIncludeInPeriod(findDate, row.periodOilPrice)) match {

@@ -32,7 +32,7 @@ object MessagesApi {
 
   case class AnswerMinMax(answer: Either[Error, MinMax])
 
-  case class AnswerAllRaw(item:Seq[OilPrice])
+  case class AnswerAllRaw(item: Seq[OilPrice])
 
   ///
   val ERROR_NOT_FOUND_FROM_DATE: Error = Error(1, "Цена за выбранную дату не найдена")

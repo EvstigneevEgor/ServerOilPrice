@@ -4,7 +4,7 @@ import http.MessagesApi.{DateOilPrice, PeriodOilPrice}
 
 import java.time.{Duration, LocalDate}
 
-object dateUtils {
+object DateUtils {
 
   def isDateIncludeInPeriod(firstDate: DateOilPrice, datePeriod: PeriodOilPrice): Boolean = {
     val firstLocalDate = dateOilPriceToLocalDate(firstDate)
@@ -25,7 +25,7 @@ object dateUtils {
     LocalDate.of(dateOilPrice.year, dateOilPrice.month, dateOilPrice.day)
   }
 
-  def getDaysBetweenDate(dateFromOpt: Option[DateOilPrice], dateToOpt: Option[DateOilPrice]) = {
+  def getDaysBetweenDate(dateFromOpt: Option[DateOilPrice], dateToOpt: Option[DateOilPrice]): Long = {
     (dateFromOpt, dateToOpt) match {
       case (Some(dateFrom), Some(dateTo)) =>
 
@@ -34,7 +34,7 @@ object dateUtils {
         Duration.between(fromLocalDate.atStartOfDay(), toLocalDate.atStartOfDay()).toDays + 1
       case (None, None) => 0L
 
-      case _ => 1
+      case _ => 1L
     }
   }
 
@@ -50,7 +50,7 @@ object dateUtils {
     val indexedMonth = IndexedSeq("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")
     indexedMonth.indexOf(moth) match {
       case index if index == -1 => None
-      case index => Some(index + 1) // Прибавляем единицу чотбы январь был 1-ым, а не 0-ым
+      case index => Some(index + 1) // Прибавляем единицу чтобы январь был 1-ым, а не 0-ым
     }
   }
 }
