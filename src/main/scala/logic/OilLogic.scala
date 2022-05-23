@@ -7,9 +7,7 @@ import scala.io.Source
 
 object OilLogic {
   val dataSource = "src/main/resource/data.csv"
-
-  getAveragePriceFromPeriod(PeriodOilPrice(Some(DateOilPrice(2019, 7, 14)), Some(DateOilPrice(2018, 8, 14))))
-
+  
   def getPriseFromDate(dateOilPrice: DateOilPrice): AnswerPrice = {
     val answer =
       getOilPriceFromFile.find { oilPrice =>
